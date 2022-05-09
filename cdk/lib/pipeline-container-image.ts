@@ -1,4 +1,4 @@
-import { CfnParameter, Token } from "aws-cdk-lib";
+import { CfnParameter, Token, Lazy } from "aws-cdk-lib";
 import { IRepository } from "aws-cdk-lib/aws-ecr";
 import { CfnTaskDefinition, ContainerDefinition, ContainerImage, ContainerImageConfig } from "aws-cdk-lib/aws-ecs";
 
@@ -9,7 +9,7 @@ export class PipelineContainerImage extends ContainerImage {
   
     constructor(repository: IRepository) {
       super();
-      this.imageName = repository.repositoryUriForTag(Token.asString(this.parameter!.valueAsString).toString());
+      this.imageName = repository.repositoryUriForTag(Lazy.string({ produce: () => this.parameter!.valueAsString }));
       this.repository = repository;
     }
   
@@ -24,8 +24,8 @@ export class PipelineContainerImage extends ContainerImage {
     }
   
     public get paramName(): string {
-        return Token.asString(this.parameter!.logicalId).toString();
-      //return Lazy.stringValue({ produce: () => this.parameter!.logicalId });
+      // return Token.asString(this.parameter!.logicalId).toString();
+      return Lazy.string({ produce: () => this.parameter!.logicalId });
     }
   
     public toRepositoryCredentialsJson(): CfnTaskDefinition.RepositoryCredentialsProperty | undefined {

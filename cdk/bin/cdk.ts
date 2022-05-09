@@ -4,6 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import { ClusterStack } from '../lib/cluster-stack';
 import { Tags } from 'aws-cdk-lib';
 import { AppStack } from '../lib/app-stack';
+import { DevPipelineStack } from '../lib/dev-pipeline-stack';
 
 const app = new cdk.App();
 const devClusterStack = new ClusterStack(app, 'DevCluster', {
@@ -25,8 +26,14 @@ const devClusterStack = new ClusterStack(app, 'DevCluster', {
 });
 Tags.of(devClusterStack).add('environment', 'dev');
 
+//Code Pipeline
+const devPipelineStack = new DevPipelineStack(app, 'DevPipelineStack');
+Tags.of(devPipelineStack).add('environment', 'dev');
+
 const devAppStack = new AppStack(app, 'DevAppStack', {
   vpc: devClusterStack.vpc,
   cluster: devClusterStack.cluster,
-})
+  appImage: devPipelineStack.appBuiltImage,
+  nginxImage: devPipelineStack.nginxBuiltImage,
+});
 Tags.of(devAppStack).add('environment', 'dev');
