@@ -33,7 +33,7 @@ export class AppStack extends Stack {
             image: appImage,
             logging: appLogging
         });
-        appContainer.addPortMappings({ containerPort: 300 })
+        appContainer.addPortMappings({ containerPort: 3000 })
 
         //Nginx
         const nginxLogging = new ecs.AwsLogDriver({
